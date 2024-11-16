@@ -30,13 +30,32 @@ In summer 2024, the overall average rating across all course-related questions w
 # Insights Deep Dive
 
 ### Enrollments trends
-•	Program 104 leads with the highest enrollment (192 students), while programs like 111, 113, 114, and 119 have fewer than 10 students.
-•	Fewer than 50 students enrolled in most programs except for 101, 103, 104, 107, 108, and 109.
-•	Most students (100%) agreed they could preview the course structure a week before the start date, with exceptions in programs 101, 103, 104, 107, 108, 111, and 118.
+- Program 104 leads with the highest enrollment (192 students), while programs like 111, 113, 114, and 119 have fewer than 10 students.
+- Fewer than 50 students enrolled in most programs except for 101, 103, 104, 107, 108, and 109.
+- Most students (100%) agreed they could preview the course structure a week before the start date, with exceptions in programs 101, 103, 104, 107, 108, 111, and 118.
 
-![Total enrollments](images/plot1.png)
+![Total enrollments](Images/plot1.png)
 
-![Course preview](images/plot2.png)
+![Course preview](Images/plot2.png)
+
+### Instructor effectiveness
+
+-	Students rated several instructors (e.g., P12, P69, P68, P87, P82) a perfect 5 across all effectiveness-related questions.
+
+![Instructor with good rating](Images/plot3.png)
+
+-	The average rating for Question 13 (instructor knowledge) is 4.56, with all other instructor-related questions averaging above 4.
+
+![Question13]( Images/plot4.png)
+
+-	Program 119 achieved the highest average (4.97) for "Instructor Effectiveness," while Program 1162 scored the lowest (3.4).
+
+![Instructoreffectiveness_program](Images/plot5.png)
+![Instructoreffectiveness course](Images/plot6.png)
+
+-	Specific instructors (P57 from Program 116, P51 from Program 109, P85 from Program 104) received ratings below 3 on certain questions in this category.
+
+![Instructoreffectiveness question](Images/plot7.png)
 
 
 
