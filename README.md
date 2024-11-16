@@ -38,7 +38,7 @@ In summer 2024, the overall average rating across all course-related questions w
 ### Instructor effectiveness
 
 -	Students rated several instructors (e.g., P12, P69, P68, P87, P82) a perfect 5 across all effectiveness-related questions.
-  ![Instructor with good rating](Images/plot3.png)
+  ![Instructor with good rating](Images/plot3_alt.png)
 
 -	The average rating for Question 13 (instructor knowledge) is 4.56, with all other instructor-related questions averaging above 4.
   ![Question13]( Images/plot4.png)
