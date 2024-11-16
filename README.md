@@ -41,29 +41,29 @@ In summer 2024, the overall average rating across all course-related questions w
   ![Instructor with good rating](Images/plot3_alt.png)
 
 -	The average rating for Question 13 (instructor knowledge) is 4.56, with all other instructor-related questions averaging above 4.
-  ![Question13]( Images/plot4.png)
+  ![Question13]( Images/plot4_alt.png)
 
 -	Program 119 achieved the highest average (4.97) for "Instructor Effectiveness," while Program 1162 scored the lowest (3.4).
-  ![Instructoreffectiveness course](Images/plot6.png)
+  ![Instructoreffectiveness course](Images/plot6_alt.png)
 
 -	Specific instructors (P57 from Program 116, P51 from Program 109, P85 from Program 104) received ratings below 3 on certain questions in this category.
-  ![Instructoreffectiveness question](Images/plot7.png)
+  ![Instructoreffectiveness question](Images/plot7_alt.png)
 
 
 ### Course content and structure
 -	Course 1141 from Program 114 had the highest rating (4.86) in this category, with positive feedback except for the last two weeks.
 
-![coursecontent1](Images/plot8.png)
+![coursecontent1](Images/plot8_alt.png)
 ![coursecontent2](Images/plot9.png)
 
 -	Course 1181 from Program 118 scored the lowest (3.87), with concerns about course organization and clarity of assignment expectations.
-![coursecontent3](Images/plot10.png)
+![coursecontent3](Images/plot10_alt.png)
 ![coursecontent4](Images/plot11.png)
 
 
 ### Student learning experience
 -	Courses 1089 from Program 108 and 1111 from Program 111 scored high (4.9–5) in student learning experience.
-![learningexp1](Images/plot12.png)
+![learningexp1](Images/plot12_alt.png)
 
 -	Courses such as 1036, 1038, and 10313 from Program 103 received low ratings, with concerns about assignment overload, outdated learning materials, and Blackboard organization.
 ![learningexp2](Images/plot13.png)
