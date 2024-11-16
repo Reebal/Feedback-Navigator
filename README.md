@@ -58,6 +58,34 @@ In summer 2024, the overall average rating across all course-related questions w
 ![Instructoreffectiveness question](Images/plot7.png)
 
 
+### Course content and structure
+-	Course 1141 from Program 114 had the highest rating (4.86) in this category, with positive feedback except for the last two weeks.
+
+![coursecontent1](Images/plot8.png)
+![coursecontent2](Images/plot9.png)
+
+-	Course 1181 from Program 118 scored the lowest (3.87), with concerns about course organization and clarity of assignment expectations.
+![coursecontent3](Images/plot10.png)
+![coursecontent4](Images/plot11.png)
+
+
+### Student learning experience
+-	Courses 1089 from Program 108 and 1111 from Program 111 scored high (4.9–5) in student learning experience.
+![learningexp1](Images/plot12.png)
+
+-	Courses such as 1036, 1038, and 10313 from Program 103 received low ratings, with concerns about assignment overload, outdated learning materials, and Blackboard organization.
+![learningexp2](Images/plot13.png)
+
+- Several courses showed lower average ratings, including 1181 (3.82) from Program 118, 1121 (3.76) from Program 112, 1096 (3.35) from Program 109, 1072 (3.8) from Program 107, 1054 (3.84) from Program 105, and 10415 (3.52) from Program 104. These ratings highlight potential issues that warrant further investigation. Cross-verifying qualitative comments from these courses could provide deeper insights into the reasons behind the lower scores, such as assignment overload, unclear expectations, or other student concerns.
+
+
+### Course duration impact
+-	Course 1096 from Program 109 (6 weeks) had an average rating of 3.13, with feedback highlighting issues with the instructor and overall student dissatisfaction.
+
+![weeks1](Images/plot14.png)
+
+-	Students from the course 1181 rated an average of 3.86 regarding course duration (8 weeks). Students from course 1072 from program 107 rated an average of 3.84 about their course duration (6 weeks). 
+
 
 
 
