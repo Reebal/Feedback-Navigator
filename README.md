@@ -9,9 +9,9 @@ Insights and recommendations are provided on the following key areas:
 - Student learning experience
 - Course duration impact
 
-The R code used for data cleaning, analysis, and visualization of course-related information is available here. 
+The R code used for data cleaning, analysis, and visualization of course-related information is available [here](allprog.rmd). 
 
-A PDF copy of the interactive visualizations can also be found here. However, the actual dataset and output files are not publicly shared due to the sensitive nature of student feedback on instructors and courses.
+A PDF copy of the interactive visualizations can also be found [here](FeedbackNavigator.pdf]. However, the actual dataset and output files are not publicly shared due to the sensitive nature of student feedback on instructors and courses.
 
 # Data Structure & Initial Checks
 
