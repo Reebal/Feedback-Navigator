@@ -1,0 +1,691 @@
+---
+title: "Feedback Navigator"
+author: "Reebal"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    df_print: paged
+runtime: shiny
+---
+
+```{r setup1, include = FALSE}
+library(tidyr)
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(reshape2)
+library(plotly)
+library(shiny)
+library(shinycssloaders)
+library(DT) 
+```
+
+
+``` {r Load_data, echo=FALSE}
+df <- read_csv("/Users/Reeba/Downloads/R project work/All_programs.csv", show_col_types = FALSE)
+#str(df)
+```
+
+```{r clean_numeric_data, echo=FALSE}
+# Identify numeric columns
+numeric_cols <- df %>% select(where(is.numeric)) 
+freq_list <- lapply(numeric_cols, function(column) table(column, useNA = "ifany"))
+#freq_list
+# no zeroes or nulls or NAs found
+```
+<br><br>
+
+#### Total enrollments by program
+```{r EDA_numeric_data, echo=FALSE}
+program_enrollments <- df %>%
+  distinct(Program, Course, Enrollments) %>%  
+  group_by(Program) %>%                    
+  summarize(Total_Enrollments = sum(Enrollments, na.rm = TRUE)) %>%  
+  arrange(desc(Total_Enrollments))
+
+#bar plot
+ggplot(program_enrollments, aes(x = reorder(factor(Program), -Total_Enrollments), y = Total_Enrollments)) +
+  geom_bar(stat = "identity", fill = "skyblue", color = "white") +  
+  labs(x = NULL, y = "Total Enrollments") +
+  geom_text(aes(label = Total_Enrollments), vjust = -0.5, size = 3.5) + 
+  theme_minimal() + 
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major = element_blank(),  
+    panel.grid.minor = element_blank()  
+  )
+
+```
+<br><br><br>
+
+##### Percentage of students who could preview the course structure and requirements a week before the start date
+
+```{r question9, echo=FALSE}
+percentages_by_program <- df %>%
+  group_by(Program) %>%
+  summarize(Count_Yes = sum(`Question 9` == 2),
+            Total_Responses = n()) %>% 
+  mutate(Percentage_Yes = (Count_Yes / Total_Responses) * 100)
+
+#bar plot
+ggplot(percentages_by_program, aes(x = reorder(factor(Program), - Percentage_Yes), y = Percentage_Yes)) +
+  geom_bar(stat = "identity", fill = "lightpink", color = "white") +
+  labs(x = NULL, 
+       y = "Percentage of Yes responses") +
+  geom_text(aes(label = paste0(round(Percentage_Yes, 1))), 
+            vjust = -0.5, size = 3.5) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.grid.major = element_blank(),  
+        panel.grid.minor = element_blank() ) 
+```
+<br><br><br>
+
+#### Overall average of all programs, by categories
+
+```{r overall_avgs, echo=FALSE}
+# Define the question groups for each category
+question_groups <- list(
+  Instructor_effectiveness = paste0("Question ", 13:21),
+  Course_content_and_structure = c("Question 22", "Question 27", "Question 29", "Question 30", "Question 32", "Question 33", "Question 34"),
+  Student_learning_experience = c("Question 23", "Question 24", "Question 25", "Question 26", "Question 28", "Question 31", "Question 35")
+)
+
+# Define question labels organized by category
+question_labels <- list(
+  Instructor_effectiveness = list(
+    "Question 13" = "Instructor was knowledgeable",
+    "Question 14" = "Instructor organized subject matter clearly",
+    "Question 15" = "Instructor guided independent learning",
+    "Question 16" = "Instructor was present in the course",
+    "Question 17" = "Instructor graded with clear expectations",
+    "Question 18" = "Instructor gave helpful feedback",
+    "Question 19" = "Instructor was accessible",
+    "Question 20" = "Instructor showed concern for progress",
+    "Question 21" = "I would recommend this instructor"
+  ),
+  Course_content_and_structure = list(
+    "Question 22" = "The course was intellectually challenging",
+    "Question 27" = "The course improved understanding of subject matter",
+    "Question 29" = "I met my personal goals in this course",
+    "Question 30" = "I met my learning goals in this course",
+    "Question 32" = "The course encouraged student interaction",
+    "Question 33" = "This course enhanced faculty-student interaction",
+    "Question 34" = "The course allowed pacing flexibility"
+  ),
+  Student_learning_experience = list(
+    "Question 23" = "Course objectives were clearly stated",
+    "Question 24" = "Grading criteria were clearly stated",
+    "Question 25" = "Assignments helped meet course objectives",
+    "Question 26" = "Forum activities aided in learning content",
+    "Question 28" = "Materials enhanced course understanding",
+    "Question 31" = "Course design contributed to learning",
+    "Question 35" = "Course technology supported learning goals"
+  )
+)
+
+# Calculate overall category averages
+overall_category_averages <- lapply(question_groups, function(questions) {
+  round(mean(colMeans(df[, questions], na.rm = TRUE)), 2)
+})
+
+ui <- fluidPage(
+  fluidRow(
+    lapply(names(overall_category_averages), function(category) {
+      color <- switch(category,
+                      "Instructor_effectiveness" = "rgba(250, 128, 114, 0.3)", 
+                      "Course_content_and_structure" = "#FFED99", 
+                      "Student_learning_experience" = "#C3D9B0")
+
+      column(
+        width = 4,
+        div(style = paste("margin: 15px; padding: 15px; border: 1px solid #90A4AE; border-radius: 8px; background-color:", color, "; text-align: center;"),
+            h4(icon("star"), gsub("_", " ", category)), 
+            div(style = "margin-top: 10px; font-size: 2em; color: #1976D2;", overall_category_averages[[category]]),
+
+            div(style = "margin-top: 15px; text-align: left; font-size: 0.9em;",
+                lapply(names(question_labels[[category]]), function(question) {
+                  tags$p(style = "margin: 5px 0; color: #424242;", 
+                         tags$b(question), ":", tags$em(question_labels[[category]][[question]]))
+                })
+            )
+        )
+      )
+    })
+  )
+)
+
+# Server (empty in this case since we are only displaying static content)
+server <- function(input, output) {}
+
+# Run the Shiny app
+shinyApp(ui = ui, server = server)
+
+```
+<br><br><br>
+
+#### Overall average by questions
+```{r category_avg, echo=FALSE}
+category_averages <- list()
+
+# Loop over each category to calculate and round the averages
+for (category in names(question_groups)) {
+  questions <- question_groups[[category]]
+  averages <- round(colMeans(df[, questions], na.rm = TRUE), 2)
+  category_averages[[category]] <- averages
+}
+
+category_df <- bind_rows(
+  lapply(category_averages, function(x) as.data.frame(t(x))),
+  .id = "Category"
+)
+
+category_long <- category_df %>%
+  pivot_longer(-Category, names_to = "Question", values_to = "Average")
+
+# Remove the word "Question" from the x-axis labels
+category_long$Question <- gsub("Question ", "", category_long$Question)
+
+p <- ggplot(category_long, aes(x = Question, y = Average, fill = Category, text = paste("Average:", Average))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(
+    title = NULL,
+    x = "Questions",  # Keep the title for x-axis but change it if needed
+    y = "Average rating"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = c("#FDE724", "salmon", "olivedrab"))
+div(style = "display: flex; justify-content: center; align-items: center; padding: 20px;",
+  ggplotly(p, tooltip = "text")
+)
+
+```
+<br><br><br>
+
+#### Average ratings by programs
+```{r program_avgs, echo=FALSE}
+
+categories <- list(
+  Instructor_Effectiveness = c("Question 13", "Question 14", "Question 15", "Question 16", "Question 17", "Question 18", "Question 19", "Question 20", "Question 21"),
+  Course_Content = c("Question 22", "Question 27", "Question 29", "Question 30", "Question 32", "Question 33", "Question 34"),
+  Student_Learning_Experience = c("Question 23", "Question 24", "Question 25", "Question 26", "Question 28", "Question 31", "Question 35") 
+) #c - combine values into a list
+
+# Calculate averages by program for each category
+averages_by_program <- df %>%
+  group_by(Program) %>%
+  summarise(
+    Instructor_Effectiveness = round(mean(c_across(all_of(categories$Instructor_Effectiveness)), na.rm = TRUE), 2),
+    Course_Content = round(mean(c_across(all_of(categories$Course_Content)), na.rm = TRUE), 2),
+    Student_Learning_Experience = round(mean(c_across(all_of(categories$Student_Learning_Experience)), na.rm = TRUE), 2)
+  )
+#c_across - combine values from multiple columns
+#print(averages_by_program)
+
+
+averages_long <- averages_by_program %>%
+  pivot_longer(cols = -Program, names_to = "Category", values_to = "Average") %>%
+  mutate(TooltipText = paste("Average:", Average))
+
+heatmap_plot <- ggplot(averages_long, aes(x = Category, y = factor(Program), fill = Average, text = TooltipText)) +
+  geom_tile(color = "white") +
+  scale_fill_viridis_c(option = "D") +
+  labs(
+    title = NULL,
+    x = NULL,
+    y = "Program",
+    fill = "Average rating"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 20, hjust = 1))
+
+interactive_heatmap <- ggplotly(heatmap_plot, tooltip = "text")
+
+div(style = "width: 80%; margin: auto;",
+    interactive_heatmap
+)
+
+```
+<br><br><br>
+
+#### Average ratings by courses
+```{r revised_course_avg, echo=FALSE}
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(width = 4,
+      selectInput("program", "Select a program:", 
+                  choices = unique(averages_long$Program),
+                  selected = unique(averages_long$Program)[1],
+                  width = "200px"),  
+      checkboxGroupInput("categories", "Select categories:", 
+                         choices = unique(averages_long$Category),
+                         selected = unique(averages_long$Category)),
+      downloadButton("downloadData", "Download Data") 
+    ),
+    mainPanel(width = 8,
+      plotlyOutput("averagePlot", width = "100%", height = "300px")  
+    )
+  )
+)
+
+server <- function(input, output) {
+  filtered_data <- reactive({
+    averages_long %>%
+      filter(Program == input$program & Category %in% input$categories) %>%
+      mutate(Course = factor(Course, levels = unique(Course)))
+  })
+  
+  output$averagePlot <- renderPlotly({
+    p <- ggplot(filtered_data(), aes(x = Course, y = Average, fill = Category, text = TooltipText)) +
+      geom_bar(stat = "identity", position = "dodge") +
+      labs(
+        title = NULL,
+        x = "Course",
+        y = "Average rating",
+        fill = "Category"
+      ) +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1),
+            legend.position = "bottom",
+            legend.box = "horizontal",
+            legend.title = element_blank(),
+            legend.spacing.x = unit(0.5, "cm"),
+            legend.key.size = unit(0.5, "cm")) +
+      scale_fill_manual(values = c("#FDE724", "salmon", "olivedrab"))
+    
+    ggplotly(p, tooltip = "text") 
+  })
+  
+  # Download data as CSV
+  output$downloadData <- downloadHandler(
+    filename = function() { paste("average_data_", input$program, ".csv", sep = "") },
+    content = function(file) {
+      write.csv(filtered_data(), file, row.names = FALSE)
+    }
+  )
+}
+
+shinyApp(ui = ui, server = server)
+
+
+```
+
+
+```{r course_averages, include=FALSE}
+# Calculate averages by program and course
+averages_by_program_course <- df %>%
+  group_by(Program, Course) %>%
+  summarise(
+    Instructor_Effectiveness = round(mean(c_across(all_of(categories$Instructor_Effectiveness)), na.rm = TRUE), 2),
+    Course_Content = round(mean(c_across(all_of(categories$Course_Content)), na.rm = TRUE), 2),
+    Student_Learning_Experience = round(mean(c_across(all_of(categories$Student_Learning_Experience)), na.rm = TRUE), 2),
+    .groups = "drop"  # Drop the grouping after summarisation
+  )
+
+averages_long <- averages_by_program_course %>%
+  pivot_longer(cols = -c(Program, Course), names_to = "Category", values_to = "Average") %>%
+  mutate(TooltipText = paste("Average:", Average))
+
+# Define UI
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel( width = 3,
+      selectInput("program", "Select a program:", 
+                  choices = unique(averages_long$Program),
+                  selected = unique(averages_long$Program)[1],
+                  width = "200px")  
+    ),
+    mainPanel( width = 9,
+      plotlyOutput("averagePlot", width = "100%", height = "300px")  
+    )
+  )
+)
+
+server <- function(input, output) {
+  
+  output$averagePlot <- renderPlotly({
+    filtered_data <- averages_long %>% filter(Program == input$program)
+    
+    # Ensure Course is a factor and keep the order of appearance
+    filtered_data$Course <- factor(filtered_data$Course, levels = unique(filtered_data$Course))
+    
+    p <- ggplot(filtered_data, aes(x = Course, y = Average, fill = Category, text = TooltipText)) +
+      geom_bar(stat = "identity", position = "dodge") +
+      labs(
+        title = NULL,
+        x = "Course",
+        y = "Average rating",
+        fill = "Category"
+      ) +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1),
+            legend.position = "bottom",  # Move legend to the bottom
+            legend.box = "horizontal",    # Arrange legend items horizontally
+            legend.title = element_blank(),  # Hide legend title
+            legend.spacing.x = unit(0.5, "cm"),  # Reduce horizontal spacing
+            legend.key.size = unit(0.5, "cm")  # Reduce the size of the legend keys
+            ) + scale_fill_manual(values = c("#FDE724", "salmon", "olivedrab"))
+    
+    ggplotly(p, tooltip = "text") 
+  })
+}
+
+shinyApp(ui = ui, server = server)
+
+
+```
+<br><br><br>
+
+#### Average ratings by Instructor effectiveness
+
+```{r instructor_effectiveness, echo=FALSE}
+# Question labels for better readability
+question_labels <- c(
+  "Question 13" = "Instructor was knowledgeable",
+  "Question 14" = "Instructor organized subject matter clearly",
+  "Question 15" = "Instructor guided independent learning",
+  "Question 16" = "Instructor was present in the course",
+  "Question 17" = "Instructor graded with clear expectations",
+  "Question 18" = "Instructor gave helpful feedback",
+  "Question 19" = "Instructor was accessible",
+  "Question 20" = "Instructor showed concern for progress",
+  "Question 21" = "I would recommend this instructor"
+)
+
+
+# UI Definition
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(width = 2,
+      selectInput("program", "Select a program:", 
+                  choices = sort(unique(df$Program)), 
+                  selected = sort(unique(df$Program)[1]))
+    ),
+    mainPanel( width = 10,
+      plotlyOutput("heatmapPlot")
+    )
+  )
+)
+
+# Server Logic
+server <- function(input, output) {
+  
+  output$heatmapPlot <- renderPlotly({
+    
+    # Filter data based on selected program
+    filtered_data <- df %>%
+      filter(Program == input$program)
+
+    # Reshape the data to long format
+    long_data <- filtered_data %>%
+      pivot_longer(cols = `Question 13`:`Question 21`,  
+                   names_to = "Question",              
+                   values_to = "Rating")                
+
+    heatmap_data <- long_data %>%
+      group_by(Instructor, Question) %>%
+      summarise(Average_Rating = round(mean(Rating, na.rm = TRUE), 2), 
+                .groups = 'drop') 
+
+    heatmap_plot <- ggplot(heatmap_data, aes(x = Instructor, y = Question, fill = Average_Rating, text = paste("Average rating:", Average_Rating))) +
+      geom_tile(color = "white") +
+      scale_fill_gradient(low = "lightblue", high = "darkblue", name = "Average rating") +
+      scale_y_discrete(labels = question_labels) + 
+      labs(title = NULL, 
+           x = NULL, y = NULL) +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+            axis.text.y = element_text(size = 8),  
+            axis.ticks = element_blank(),
+            plot.title = element_text(hjust = 0.5), 
+            panel.grid = element_blank()) 
+
+    interactive_heatmap <- ggplotly(heatmap_plot, tooltip = "text")
+    interactive_heatmap
+  })
+}
+shinyApp(ui = ui, server = server)
+
+```
+<br><br><br>
+
+
+```{r by_instructor, include=FALSE}
+# Calculate average ratings by instructor, including program
+averages_by_instructor <- df %>%
+  group_by(Program, Instructor) %>%
+  summarise(
+    Average_Rating = round(mean(c_across(all_of(categories$Instructor_Effectiveness)), na.rm = TRUE), 2),
+    .groups = "drop"
+  )
+
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("program", "Select a program:", 
+                  choices = unique(df$Program), 
+                  selected = unique(df$Program)[1])
+    ),
+    mainPanel(
+      plotlyOutput("heatmapPlot")
+    )
+  )
+)
+
+server <- function(input, output) {
+  output$heatmapPlot <- renderPlotly({
+    filtered_data <- averages_by_instructor %>% 
+      filter(Program == input$program)
+    
+    heatmap_plot <- ggplot(filtered_data, aes(x = Instructor, y = "", fill = Average_Rating)) +
+      geom_tile(color = "white") +
+      scale_fill_gradient(low = "darkblue", high = "yellow", name = "Average Rating") + 
+      labs(title = paste("Instructor effectiveness ratings for", input$program), x = "Instructor", y = "") +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1),
+            axis.title.y = element_blank(),
+            axis.ticks.y = element_blank(),
+            panel.grid = element_blank())
+
+    ggplotly(heatmap_plot)
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+<br><br><br>
+
+#### Average ratings by program and week type
+
+```{r by_weeks_by_program, echo=FALSE}
+
+df$Weeks <- ifelse(df$Weeks == "8 Weeks", "8 weeks", df$Weeks)
+#unique(df$Weeks)
+
+averages_by_program_weeks <- df %>%
+  group_by(Program, Weeks) %>%
+  summarise(
+    Average_Rating = round(mean(c_across(`Question 13`:`Question 35`), na.rm = TRUE), 2),
+    .groups = "drop"  
+  )
+
+
+heatmap <- ggplot(averages_by_program_weeks, aes(x = factor(Weeks), y = factor(Program), fill = Average_Rating, text = paste("Average Rating:", Average_Rating))) +
+  geom_tile(color = "white") +
+  scale_fill_viridis_c(option = "D") +
+  labs(
+    title = NULL,
+    x = NULL,
+    y = "Programs",
+    fill = "Average rating"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.text.y = element_text(size = 8)  # Adjust text size to fit more programs if necessary
+  )
+
+interactive_heatmap <- ggplotly(heatmap, tooltip = "text")
+
+div(style = "width: 80%; margin: auto;",
+    interactive_heatmap
+)
+
+```
+
+<br><br><br>
+
+#### Average ratings by courses and weeks
+
+```{r by_weeks_by_courses, echo=FALSE}
+averages_by_program_weeks <- df %>%
+  group_by(Program, Course, Weeks) %>%
+  summarise(
+    Average_Rating = round(mean(c_across(`Question 13`:`Question 35`), na.rm = TRUE), 2),
+    .groups = "drop"
+  )
+
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("program", "Select a program:", 
+                  choices = unique(averages_by_program_weeks$Program),
+                  selected = unique(averages_by_program_weeks$Program)[1],
+                  width = "200px")
+    ),
+    mainPanel(
+      plotlyOutput("averagePlot", width = "100%", height = "300px")
+    )
+  )
+)
+
+server <- function(input, output) {
+  
+  output$averagePlot <- renderPlotly({
+    filtered_data <- averages_by_program_weeks %>%
+      filter(Program == input$program)
+    
+    heatmap <- ggplot(filtered_data, aes(x = factor(Weeks), y = factor(Course), fill = Average_Rating, text = paste("Average Rating:", Average_Rating))) +
+      geom_tile(color = "white") +
+      scale_fill_viridis_c(option = "D") +
+      labs(
+        title = NULL,
+        x = NULL,
+        y = "Courses",
+        fill = "Average rating"
+      ) +
+      theme_minimal() +
+      theme(
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.text.y = element_text(size = 8)
+      )
+    ggplotly(heatmap, tooltip = "text")
+  })
+}
+
+shinyApp(ui = ui, server = server)
+ 
+```
+
+
+
+```{r dealing_with_NAs, include=FALSE}
+
+# Define the values to be treated as <NA>
+na_values <- c("N/A", "na", "n/a", ".", "", "1", "NA", "`", "Na", "N.A", "123", "312312", "N/A.", "jlkjlk", "kkkk", "12312", "A", "jllkj", "N.a", "n/A", "N/a", "123123")
+
+na_rows_text <- df %>%
+  filter(if_any(c(`Question 7`, `Question 8`, `Question 36`), ~ . %in% na_values))
+
+df_cleaned <- df %>%
+  mutate(across(c(`Question 7`, `Question 8`, `Question 36`), ~ replace(., . %in% na_values, NA_character_)))
+
+#Check if the values are replaced
+frequency_after_cleaning <- lapply(df_cleaned[, c("Question 7", "Question 8", "Question 36")], function(x) table(x, useNA = "ifany"))
+#frequency_after_cleaning
+
+#the data looks good. Let's overwrite the cleaned data into the original dataframe df
+df <- df_cleaned 
+
+#textual_cols <- df %>% select(where(is.character)) 
+#text_freq_list <- lapply(textual_cols, function(column) table(column, useNA = "ifany"))
+#text_freq_list
+```
+
+```{r dealing_with_none, include=FALSE}
+#similar to NAs, there are different variation of None like no, No, absolutely none, etc 
+
+none_values <- c("nothing", "Nothing", "nothing at all", "nothing.", "None", "none", "No", "no", "absolutely none", "None.", "nope", "na na", "non", "Nothing.", "nothing as of right now", "nothing at all", "Nothing at this time", "Not sure.", "Not sure", "nope", "None!", "none!", "None at this time.", "none at this time.", "None at this time", "none at this time", "none at the moment", "no suggestions", "No suggestions", "No suggestions", "No recommendations.", "No recommendations at this time.", "no recommendations at this time.", ".None.", "none.")
+
+none_rows_text <- df %>%
+  filter(if_any(everything(), ~ . %in% none_values))  # Check across all textual columns
+
+# Replace variations of "none" and "no" with "None" in all textual columns
+df_cleaned <- df %>%
+  mutate(across(where(is.character), 
+                 ~ replace(., . %in% none_values, "None")))
+
+df <- df_cleaned 
+
+```
+
+```{r export, echo=FALSE}
+# Select the columns you want
+#recommendations_cols<- df %>% select(Program, Course, `Question 8`)
+
+# Write the selected columns to a CSV file
+#write.csv(recommendations_cols, "revised.csv", row.names = FALSE)
+```
+
+#### Course recommendations
+
+```{r text_analysis, echo=FALSE}
+data <- read_csv("/Users/Reeba/Downloads/R project work/text_analysis.csv", col_names = TRUE, quote = "\"", trim_ws = TRUE, show_col_types = FALSE)
+ui <- fluidPage(
+  sidebarLayout(
+    sidebarPanel( width = 3,
+      selectInput("program", "Choose a program", choices = unique(data$Program), selected = NULL),
+      checkboxGroupInput("course", "Select Course/s", choices = NULL),
+      downloadButton("downloadData", "Download") 
+    ),
+    mainPanel( width = 9,
+      DTOutput("table"), # For interactive table
+      plotlyOutput("plot") # For any chart visualizations
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  observe({
+    selected_program <- input$program
+    course_choices <- unique(data$Course[data$Program == selected_program])
+    updateCheckboxGroupInput(session, "course", choices = course_choices)
+  })
+  
+  output$table <- renderDT({
+    req(input$program, input$course)
+    filtered_data <- data %>%
+      filter(Program == input$program, Course %in% input$course) %>%
+      select(Examples, summarised_recommendation) 
+    
+    datatable(filtered_data, colnames = c("Examples", "Recommendation summary"))
+  })
+
+  # Data download handler
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      paste("filtered_data_", Sys.Date(), ".csv", sep = "")
+    },
+    content = function(file) {
+      req(input$program, input$course)
+      
+      filtered_data <- data %>%
+        filter(Program == input$program, Course %in% input$course)
+      
+      write.csv(filtered_data, file, row.names = FALSE)
+    }
+  )
+}
+shinyApp(ui = ui, server = server)
+```
