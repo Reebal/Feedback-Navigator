@@ -3,7 +3,7 @@
 McDaniel College, a private liberal arts college founded in 1867, is focused on delivering a top-notch, student-centered education through its undergrad, grad, and certificate programs. The Graduate and Professional Studies division helps fuel McDaniel’s growth by attracting students looking to advance in fields like education, business, and healthcare. To keep a competitive edge and improve student experience, McDaniel values student feedback on courses, instructors, and program structure. As a volunteer data analyst, I’m supporting my professor by analyzing this feedback, identifying trends, and highlighting areas for improvement. My work will inform insights that my professor can present to the Dean to drive data-backed improvements in the graduate programs.
 
 Insights and recommendations are provided on the following key areas: 
-- Enrollments trends
+- Enrollment trends
 - Instructor effectiveness
 - Course content and structure
 - Student learning experience
@@ -35,6 +35,7 @@ In summer 2024, the overall average rating across all course-related questions w
 - Program 104 leads with the highest enrollment (192 students), while programs like 111, 113, 114, and 119 have fewer than 10 students.
 - Fewer than 50 students enrolled in most programs except for 101, 103, 104, 107, 108, and 109.
 - Most students (100%) agreed they could preview the course structure a week before the start date, with exceptions in programs 101, 103, 104, 107, 108, 111, and 118.
+  
   ![Total enrollments_course_preview](Images/plot1and2.png)
 
 ## Instructor effectiveness
@@ -69,6 +70,7 @@ In summer 2024, the overall average rating across all course-related questions w
 
 ## Students learning experience
 -	Courses 1089 from Program 108 and 1111 from Program 111 scored high (4.9–5) in student learning experience.
+  
   ![learningexp1](Images/plot12_alt.png)
 
 -	Courses such as 1036, 1038, and 10313 from Program 103 received low ratings, with concerns about assignment overload, outdated learning materials, and Blackboard organization.
