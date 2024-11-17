@@ -15,11 +15,13 @@ A PDF copy of the interactive visualizations can also be found [here](Feedback-N
 
 # Data Structure & Initial Checks
 
-![Data_dictionary](Images/fp_data_dict.png)
+Over 1,000 records of student feedback were collected across 19 Graduate and Professional programs, comprising 36 columns of quantitative and qualitative feedback. Program and course information were anonymized for security.
+- Numerical data had no missing values, as they were required fields during feedback collection. Rating data (Questions 13 to 35) was provided on a scale of 1 (Strongly Disagree) to 5 (Strongly Agree).
+- Qualitative data was cleaned to standardize variations of missing values (e.g., "Na," "N/a," "n/A") to <NA>.
+- Questions were categorized into three groups for better visualization, and qualitative analysis of Question 8 feedback was conducted to identify themes for course improvement.
 
-### Notes:
--	Questions 13 to 35: Rate on a scale of 1 (Strongly Disagree) to 5 (Strongly Agree)
--	The questions are categorised into 3 for better visualization
+![Data_dictionary](Images/fp_data_dict.png)
+![Categories](Images/categories.png)
 
 # Executive Summary
 
