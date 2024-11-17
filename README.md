@@ -85,7 +85,16 @@ In summer 2024, the overall average rating across all course-related questions w
 
 -	Students from the course 1181 rated an average of 3.86 regarding course duration (8 weeks). Students from course 1072 from program 107 rated an average of 3.84 about their course duration (6 weeks). 
 
+# Recommendations
 
+Based on the insights and findings above, we would recommend the Dean of Graduate and Professional Studies to consider the following:
+
+- Address low-enrollment programs: Evaluate programs with fewer than 10 students (e.g., Programs 111, 113, 114, 119) for sustainability. Consider targeted marketing or curriculum updates to increase enrollment.
+- Ensure consistent course previews: Standardize the availability of course previews a week before the start date across all programs, addressing gaps in Programs 101, 103, 104, 107, 108, 111, and 118.
+- Support instructors with low ratings: Offer professional development and mentorship to instructors in programs with low ratings (e.g., P57 in Program 116 and Program 1162 overall). Focus on addressing student concerns for improved effectiveness.
+- Improve course structure and clarity: Revamp courses like 1181 (Program 118) by enhancing course organization and clarity of assignment expectations to address concerns about content and structure.
+- Enhance student learning experience: Streamline assignments, update outdated materials, and improve Blackboard usability for courses with low ratings (e.g., 1036, 1038, 10313 from Program 103).
+- Reassess course duration: Evaluate the pacing and workload of short-duration courses like 1096 (6 weeks, Program 109) and 1181 (8 weeks, Program 118). Consider feedback on whether alternative formats or adjusted pacing would better meet student needs.
 
 
 
